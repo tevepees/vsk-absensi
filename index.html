@@ -1,1604 +1,1100 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#3d6b47" />
+  <meta name="theme-color" content="#03473C" />
   <meta name="description" content="Sistem absensi digital staff produksi PT Varian Sumber Karya" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="VSK Absensi" />
+  <link rel="apple-touch-icon"             href="icons/favicon-96x96.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/favicon-96x96.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/favicon-96x96.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="32x32"   href="icons/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/favicon-96x96.png" />
   <title>VSK Absensi</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono&display=swap" rel="stylesheet" />
 
   <style>
     /* ================================================
-       DESIGN TOKENS
+       VSK DESIGN TOKENS
        ================================================ */
     :root {
-      --bg: #faf8f4;
-      --card: #ffffff;
-      --leaf: #3d6b47;
-      --leaf2: #4f8a5c;
-      --leaf-bg: #eef4f0;
-      --leaf-light: #c8e0ce;
-      --amber: #b07730;
-      --amber-bg: #fdf4e7;
-      --amber-light: #f0d498;
-      --rose: #a05050;
-      --rose-bg: #fdf0f0;
+      --vsk-dark:   #03473C;
+      --vsk-green:  #048419;
+      --vsk-lime:   #6FBC33;
+      --vsk-yellow: #FFD333;
+      --bg:         #faf8f4;
+      --card:       #ffffff;
+      --leaf-bg:    #e5f5de;
+      --leaf-light: #9fd870;
+      --amber:      #5a4600;
+      --amber-bg:   #fffde6;
+      --amber-light:#FFD333;
+      --rose:       #a05050;
+      --rose-bg:    #fdf0f0;
       --rose-light: #f0c8c8;
-      --border: #e0dbd0;
-      --border2: #ede8e0;
-      --text: #2c2825;
-      --text2: #6b6356;
-      --text3: #9e9688;
+      --border:     #e0dbd0;
+      --border2:    #ede8e0;
+      --text:       #2c2825;
+      --text2:      #6b6356;
+      --text3:      #9e9688;
       --ff: 'Fraunces', Georgia, serif;
       --fb: 'DM Sans', system-ui, sans-serif;
       --fm: 'DM Mono', 'Courier New', monospace;
       --r: 12px;
-      --rs: 8px;
-      --shadow: 0 1px 4px rgba(44, 40, 37, .06), 0 4px 16px rgba(44, 40, 37, .07);
+      --shadow: 0 1px 4px rgba(3,71,60,.07), 0 4px 16px rgba(3,71,60,.08);
     }
 
-    /* ================================================
-       RESET
-       ================================================ */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-      scroll-behavior: smooth;
-    }
-
+    /* ================================================ RESET */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: var(--fb);
-      font-size: 15px;
-      line-height: 1.5;
-      color: var(--text);
-      background: var(--bg);
-      min-height: 100vh;
+      font-family: var(--fb); font-size: 15px; line-height: 1.5;
+      color: var(--text); background: var(--bg); min-height: 100vh;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+    input, textarea, select { font-family: inherit; font-size: inherit; }
+    img { max-width: 100%; display: block; }
 
-    button {
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-family: inherit;
-      color: inherit;
-    }
+    /* ================================================ SHELL */
+    #app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    #view-form { flex: 1; display: flex; flex-direction: column; }
 
-    input,
-    textarea {
-      font-family: inherit;
-      font-size: inherit;
-    }
-
-    img {
-      max-width: 100%;
-      display: block;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    /* ================================================
-       APP SHELL
-       ================================================ */
-    #app {
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    #view-form {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ================================================
-       HEADER
-       ================================================ */
+    /* ================================================ HEADER */
     .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: var(--card);
-      border-bottom: 1px solid var(--border2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: sticky; top: 0; z-index: 20;
+      background: var(--vsk-dark); border-bottom: 2.5px solid var(--vsk-yellow);
+      display: flex; align-items: center; justify-content: space-between;
       padding: 14px 16px 12px;
       padding-top: calc(14px + env(safe-area-inset-top));
     }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 34px; height: 34px; flex-shrink: 0; }
+    .brand-name { font-family: var(--ff); font-size: 17px; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
+    .brand-sub  { font-size: 11px; color: rgba(111,188,51,.9); margin-top: 1px; }
+    .time-block { text-align: right; }
+    .clock-time { font-family: var(--fm); font-size: 16px; color: #fff; letter-spacing: 0.04em; }
+    .clock-date { font-size: 11px; color: rgba(255,211,51,.85); margin-top: 2px; }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      flex-shrink: 0;
-    }
-
-    .brand-name {
-      font-family: var(--ff);
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.01em;
-    }
-
-    .brand-sub {
-      font-size: 11px;
-      color: var(--text3);
-      margin-top: 1px;
-    }
-
-    .time-block {
-      text-align: right;
-    }
-
-    .clock-time {
-      font-family: var(--fm);
-      font-size: 17px;
-      color: var(--text);
-      letter-spacing: 0.03em;
-    }
-
-    .clock-date {
-      font-size: 11px;
-      color: var(--text3);
-      margin-top: 2px;
-    }
-
-    /* ================================================
-       GPS STATUS BAR
-       ================================================ */
+    /* ================================================ GPS BAR */
     .gps-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 16px; font-size: 13px; font-weight: 500;
+      transition: background .3s, color .3s; border-bottom: 1px solid transparent;
+    }
+    .gps-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .gps-label { flex: 1; }
+    .gps-refresh-btn { font-size: 15px; padding: 2px 6px; border-radius: 5px; opacity: .75; transition: opacity .15s, background .15s; }
+    .gps-refresh-btn:hover { opacity: 1; }
+
+    .gps-loading  { background: #f4f1ea; color: var(--text2); border-bottom-color: var(--border2); }
+    .gps-loading .gps-dot { background: var(--text3); animation: blink 1.2s ease-in-out infinite; }
+    .gps-loading .gps-refresh-btn { display: none; }
+    .gps-ok { background: var(--leaf-bg); color: var(--vsk-dark); border-bottom-color: var(--leaf-light); }
+    .gps-ok .gps-dot { background: var(--vsk-lime); }
+    .gps-ok .gps-refresh-btn { color: var(--vsk-dark); }
+    .gps-ok .gps-refresh-btn:hover { background: rgba(3,71,60,.1); }
+    .gps-outside { background: var(--amber-bg); color: var(--amber); border-bottom-color: var(--amber-light); }
+    .gps-outside .gps-dot { background: var(--vsk-yellow); animation: blink 2s ease-in-out infinite; }
+    .gps-outside .gps-refresh-btn { color: var(--amber); }
+    .gps-outside .gps-refresh-btn:hover { background: rgba(255,211,51,.15); }
+    .gps-error { background: var(--rose-bg); color: var(--rose); border-bottom-color: var(--rose-light); }
+    .gps-error .gps-dot { background: var(--rose); }
+    .gps-error .gps-refresh-btn { color: var(--rose); }
+    .gps-error .gps-refresh-btn:hover { background: rgba(160,80,80,.1); }
+
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+    /* ================================================
+       GPS BLOCK OVERLAY
+       Menutup ~50% bawah UI saat GPS belum aktif (Masuk/Pulang)
+       ================================================ */
+    .gps-block {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      /* tinggi ~55% dari viewport form */
+      height: 58%;
+      z-index: 10;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      padding: 9px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      transition: background 0.3s ease, color 0.3s ease;
-      border-bottom: 1px solid transparent;
+      justify-content: flex-start;
+      padding-top: 32px;
+      /* glass backdrop */
+      background: rgba(250,248,244,0.72);
+      backdrop-filter: blur(10px) saturate(1.2);
+      -webkit-backdrop-filter: blur(10px) saturate(1.2);
+      border-top: 1.5px solid var(--border2);
+      /* subtle top shadow cast down */
+      box-shadow: 0 -8px 32px rgba(3,71,60,.08);
+      transition: opacity .25s;
+    }
+    .gps-block.hidden { display: none; }
+
+    .gps-block-inner {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; padding: 0 28px; text-align: center; max-width: 360px;
     }
 
-    .gps-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      transition: background 0.3s;
-    }
-
-    .gps-label {
-      flex: 1;
-    }
-
-    .gps-refresh-btn {
-      font-size: 15px;
-      padding: 2px 5px;
-      border-radius: 5px;
-      line-height: 1;
-      transition: background 0.15s, opacity 0.15s;
-      opacity: 0.7;
-    }
-
-    .gps-refresh-btn:hover {
-      opacity: 1;
-    }
-
-    /* GPS States */
-    .gps-loading {
-      background: #f4f1ea;
-      color: var(--text2);
-      border-bottom-color: var(--border2);
-    }
-
-    .gps-loading .gps-dot {
-      background: var(--text3);
-      animation: blink 1.2s ease-in-out infinite;
-    }
-
-    .gps-loading .gps-refresh-btn {
-      display: none;
-    }
-
-    .gps-ok {
-      background: var(--leaf-bg);
-      color: var(--leaf);
-      border-bottom-color: var(--leaf-light);
-    }
-
-    .gps-ok .gps-dot {
-      background: var(--leaf);
-    }
-
-    .gps-ok .gps-refresh-btn {
-      color: var(--leaf);
-    }
-
-    .gps-ok .gps-refresh-btn:hover {
-      background: rgba(61, 107, 71, .12);
-    }
-
-    .gps-outside {
-      background: var(--amber-bg);
-      color: var(--amber);
-      border-bottom-color: var(--amber-light);
-    }
-
-    .gps-outside .gps-dot {
-      background: var(--amber);
-      animation: blink 2s ease-in-out infinite;
-    }
-
-    .gps-outside .gps-refresh-btn {
-      color: var(--amber);
-    }
-
-    .gps-outside .gps-refresh-btn:hover {
-      background: rgba(176, 119, 48, .12);
-    }
-
-    .gps-error {
-      background: var(--rose-bg);
-      color: var(--rose);
-      border-bottom-color: var(--rose-light);
-    }
-
-    .gps-error .gps-dot {
-      background: var(--rose);
-    }
-
-    .gps-error .gps-refresh-btn {
+    .gps-block-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--rose-bg); border: 2px solid var(--rose-light);
+      display: flex; align-items: center; justify-content: center;
       color: var(--rose);
     }
 
-    .gps-error .gps-refresh-btn:hover {
-      background: rgba(160, 80, 80, .12);
+    .gps-block-title {
+      font-family: var(--ff); font-size: 18px; font-weight: 600;
+      color: var(--text); line-height: 1.3;
     }
 
-    @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.25;
-      }
+    .gps-block-desc {
+      font-size: 13px; color: var(--text2); line-height: 1.55;
     }
 
-    /* ================================================
-       MAIN FORM
-       ================================================ */
-    .main-form {
-      flex: 1;
-      padding: 20px 16px 48px;
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
+    .gps-block-actions {
+      display: flex; flex-direction: column; gap: 10px; width: 100%;
     }
 
-    /* ================================================
-       FORM FIELDS
-       ================================================ */
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .btn-open-settings {
+      width: 100%; padding: 13px 20px;
+      background: var(--vsk-dark); color: #fff;
+      border-radius: var(--r); font-size: 15px; font-weight: 600; font-family: var(--fb);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s;
     }
+    .btn-open-settings:hover { background: var(--vsk-green); }
+
+    .btn-retry-gps {
+      width: 100%; padding: 12px 20px;
+      border: 1.5px solid var(--vsk-dark); color: var(--vsk-dark);
+      border-radius: var(--r); font-size: 14px; font-weight: 500; font-family: var(--fb);
+      background: transparent; transition: background .15s;
+    }
+    .btn-retry-gps:hover { background: var(--leaf-bg); }
+
+    .gps-block-note {
+      font-size: 11px; color: var(--text3); text-align: center; line-height: 1.5;
+    }
+
+    /* Form wrapper: relative so overlay positions inside it */
+    .form-wrapper { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ================================================ FORM */
+    .main-form { flex: 1; padding: 22px 16px 52px; display: flex; flex-direction: column; gap: 22px; overflow-y: auto; }
+
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
 
     .field-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text2);
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size: 11px; font-weight: 600; color: var(--text2);
+      letter-spacing: .07em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 7px;
     }
-
-    .field-badge {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: none;
-      padding: 2px 7px;
-      border-radius: 10px;
-    }
-
-    .badge-required {
-      background: var(--rose-bg);
-      color: var(--rose);
-      border: 1px solid var(--rose-light);
-    }
-
-    .badge-optional {
-      background: var(--border2);
-      color: var(--text3);
-    }
+    .field-badge { font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: none; padding: 2px 7px; border-radius: 10px; }
+    .badge-required { background: var(--rose-bg); color: var(--rose); border: 1px solid var(--rose-light); }
 
     .field-input {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--r);
-      font-size: 16px;
-      color: var(--text);
-      background: var(--card);
-      outline: none;
-      transition: border-color 0.18s;
-      -webkit-appearance: none;
-      appearance: none;
+      width: 100%; padding: 13px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      font-size: 16px; color: var(--text); background: var(--card);
+      outline: none; transition: border-color .18s, box-shadow .18s; -webkit-appearance: none;
     }
-
-    .field-input:focus {
-      border-color: var(--leaf);
-    }
-
-    .field-input::placeholder {
-      color: var(--text3);
-    }
+    .field-input:focus { border-color: var(--vsk-dark); box-shadow: 0 0 0 3px rgba(3,71,60,.1); }
+    .field-input::placeholder { color: var(--text3); }
 
     .field-textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--r);
-      font-size: 15px;
-      color: var(--text);
-      background: var(--card);
-      outline: none;
-      resize: vertical;
-      min-height: 90px;
-      line-height: 1.55;
-      transition: border-color 0.18s;
-      -webkit-appearance: none;
-      appearance: none;
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      font-size: 15px; color: var(--text); background: var(--card);
+      outline: none; resize: vertical; min-height: 90px; line-height: 1.55;
+      transition: border-color .18s, box-shadow .18s; -webkit-appearance: none;
     }
+    .field-textarea:focus { border-color: var(--vsk-dark); box-shadow: 0 0 0 3px rgba(3,71,60,.1); }
+    .field-textarea::placeholder { color: var(--text3); }
 
-    .field-textarea:focus {
-      border-color: var(--leaf);
+    /* Dropdown / Select */
+    .field-select {
+      width: 100%; padding: 13px 40px 13px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      font-size: 16px; color: var(--text); background: var(--card);
+      outline: none; transition: border-color .18s, box-shadow .18s;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6356' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; cursor: pointer;
     }
+    .field-select:focus { border-color: var(--vsk-dark); box-shadow: 0 0 0 3px rgba(3,71,60,.1); }
+    .field-select.placeholder { color: var(--text3); }
 
-    .field-textarea::placeholder {
-      color: var(--text3);
-    }
-
-    /* ================================================
-       JENIS ABSENSI GRID
-       ================================================ */
-    .jenis-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
+    /* ================================================ JENIS */
+    .jenis-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
     .jenis-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7px;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
       padding: 14px 6px 13px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--r);
-      background: var(--card);
-      color: var(--text2);
-      font-size: 13px;
-      font-weight: 500;
-      font-family: var(--fb);
-      transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+      border: 1.5px solid var(--border); border-radius: var(--r);
+      background: var(--card); color: var(--text2);
+      font-size: 13px; font-weight: 500; font-family: var(--fb);
+      transition: border-color .15s, background .15s, color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent; user-select: none;
     }
-
-    .jenis-btn:hover {
-      border-color: var(--leaf-light);
-      background: var(--leaf-bg);
-      color: var(--leaf);
+    .jenis-btn:hover { border-color: var(--vsk-lime); background: var(--leaf-bg); color: var(--vsk-dark); }
+    .jenis-btn:active { transform: scale(.96); }
+    .jenis-btn.active { border-color: var(--vsk-dark); background: var(--vsk-dark); color: #fff; }
+    .jenis-btn.active .jenis-label::after {
+      content: ''; display: block; height: 2.5px; width: 24px;
+      background: var(--vsk-yellow); border-radius: 2px; margin: 4px auto 0;
     }
+    .ji { width: 36px; height: 36px; border-radius: 50%; background: rgba(4,132,25,.1); display: flex; align-items: center; justify-content: center; transition: background .15s; }
+    .jenis-btn:hover .ji  { background: rgba(3,71,60,.12); }
+    .jenis-btn.active .ji { background: rgba(255,211,51,.22); }
+    .ji svg { stroke: currentColor; }
 
-    .jenis-btn:active {
-      transform: scale(0.96);
-    }
+    /* ================================================ FOTO */
+    .foto-box { border: 1.5px dashed var(--border); border-radius: var(--r); background: var(--card); min-height: 150px; overflow: hidden; display: flex; align-items: stretch; }
+    .foto-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 28px 20px; text-align: center; }
+    .foto-empty-icon { width: 52px; height: 52px; border-radius: 50%; background: var(--leaf-bg); color: var(--vsk-green); display: flex; align-items: center; justify-content: center; }
+    .foto-empty-text { font-size: 13px; color: var(--text2); line-height: 1.45; }
+    .foto-filled { flex: 1; position: relative; }
+    .foto-filled img { width: 100%; height: 220px; object-fit: cover; }
+    .foto-retake-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 12px; background: linear-gradient(to top, rgba(3,71,60,.65), transparent); display: flex; justify-content: center; }
+    .btn-retake-inline { color: #fff; font-size: 13px; font-weight: 500; font-family: var(--fb); padding: 7px 16px; border-radius: 20px; border: 1px solid rgba(255,211,51,.5) !important; background: rgba(3,71,60,.4) !important; backdrop-filter: blur(4px); }
 
-    .jenis-btn.active {
-      border-color: var(--leaf);
-      background: var(--leaf);
-      color: #fff;
-    }
+    /* Surat Dokter attachment box (reuses foto-box look but for any file) */
+    .surat-box { border: 1.5px dashed var(--border); border-radius: var(--r); background: var(--card); overflow: hidden; }
+    .surat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 20px; text-align: center; }
+    .surat-empty-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--amber-bg); color: var(--amber); display: flex; align-items: center; justify-content: center; }
+    .surat-empty-text { font-size: 13px; color: var(--text2); line-height: 1.45; }
+    .surat-filled { padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+    .surat-thumb-wrap { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: var(--border2); }
+    .surat-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .surat-thumb-wrap .surat-file-icon { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text3); font-size: 24px; }
+    .surat-info { flex: 1; min-width: 0; }
+    .surat-fname { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .surat-fsize { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .surat-remove-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--rose-bg) !important; color: var(--rose); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
 
-    .jenis-btn .ji {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(61, 107, 71, .1);
-      transition: background 0.15s;
-    }
-
-    .jenis-btn.active .ji {
-      background: rgba(255, 255, 255, .2);
-    }
-
-    .jenis-btn .ji svg {
-      stroke: currentColor;
-    }
-
-    /* ================================================
-       FOTO SECTION
-       ================================================ */
-    .foto-box {
-      border: 1.5px dashed var(--border);
-      border-radius: var(--r);
-      background: var(--card);
-      min-height: 150px;
-      overflow: hidden;
-      display: flex;
-      align-items: stretch;
-    }
-
-    .foto-empty {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 28px 20px;
-      text-align: center;
-    }
-
-    .foto-empty-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--leaf-bg);
-      color: var(--leaf2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .foto-empty-text {
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.4;
-    }
-
-    .foto-filled {
-      flex: 1;
-      position: relative;
-    }
-
-    .foto-filled img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .foto-retake-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 10px 12px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
-      display: flex;
-      justify-content: center;
-    }
-
-    .btn-retake-inline {
-      color: #fff;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: var(--fb);
-      padding: 7px 16px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.45) !important;
-      background: rgba(0, 0, 0, 0.25) !important;
-      backdrop-filter: blur(4px);
-      transition: background 0.15s;
-    }
-
-    .btn-retake-inline:hover {
-      background: rgba(0, 0, 0, 0.4) !important;
-    }
-
-    /* ================================================
-       BUTTONS
-       ================================================ */
+    /* ================================================ BUTTONS */
     .btn-primary {
-      width: 100%;
-      padding: 15px 20px;
-      background: var(--leaf);
-      color: #fff;
-      border-radius: var(--r);
-      font-size: 16px;
-      font-weight: 600;
-      font-family: var(--fb);
-      letter-spacing: 0.01em;
-      transition: background 0.15s, transform 0.1s, opacity 0.15s;
-      -webkit-tap-highlight-color: transparent;
+      width: 100%; padding: 15px 20px; background: var(--vsk-dark); color: #fff;
+      border-radius: var(--r); font-size: 16px; font-weight: 600; font-family: var(--fb);
+      letter-spacing: .01em; transition: background .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent; position: relative; overflow: hidden;
     }
+    .btn-primary:not(:disabled)::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: var(--vsk-yellow); border-radius: 2px 2px 0 0; }
+    .btn-primary:hover:not(:disabled) { background: var(--vsk-green); }
+    .btn-primary:active:not(:disabled) { transform: scale(.985); }
+    .btn-primary:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; }
+    .btn-outline { padding: 10px 20px; border: 1.5px solid var(--vsk-dark); color: var(--vsk-dark); border-radius: var(--r); font-size: 14px; font-weight: 500; font-family: var(--fb); background: transparent; transition: background .15s; }
+    .btn-outline:hover { background: var(--leaf-bg); }
 
-    .btn-primary:hover:not(:disabled) {
-      background: var(--leaf2);
-    }
+    /* ================================================ ALERT */
+    .alert-error { padding: 12px 14px; background: var(--rose-bg); border: 1px solid var(--rose-light); border-radius: var(--r); color: var(--rose); font-size: 14px; line-height: 1.45; }
+    .form-note { text-align: center; font-size: 12px; color: var(--text3); margin-top: -6px; }
 
-    .btn-primary:active:not(:disabled) {
-      transform: scale(0.985);
-    }
+    /* ================================================ CAMERA */
+    .cam-overlay { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; }
+    .cam-topbar { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; padding-top: calc(14px + env(safe-area-inset-top)); background: linear-gradient(to bottom, rgba(3,71,60,.75), transparent); color: #fff; font-size: 16px; font-weight: 500; }
+    .cam-topbar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--vsk-yellow); }
+    .cam-close-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.15) !important; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .cam-close-btn:hover { background: rgba(255,255,255,.25) !important; }
+    .cam-viewport { flex: 1; position: relative; overflow: hidden; background: #111; }
+    #cam-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    #cam-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .cam-bottombar { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: 20px 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); background: linear-gradient(to top, rgba(3,71,60,.65), transparent); display: flex; align-items: center; justify-content: center; }
+    .capture-btn { width: 72px; height: 72px; border-radius: 50%; border: 4px solid var(--vsk-yellow) !important; background: rgba(255,255,255,.15) !important; position: relative; transition: transform .12s; }
+    .capture-btn::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: #fff; transition: transform .12s; }
+    .capture-btn:active { transform: scale(.9); }
+    .capture-btn:active::after { transform: scale(.88); }
+    .cam-preview-actions { display: flex; gap: 10px; width: 100%; }
+    .btn-cam-retake { flex: 1; padding: 13px; border: 1.5px solid rgba(255,211,51,.5) !important; border-radius: var(--r); color: #fff; font-size: 15px; font-weight: 500; font-family: var(--fb); background: rgba(3,71,60,.4) !important; }
+    .btn-cam-use { flex: 1.3; padding: 13px; border-radius: var(--r); color: var(--vsk-dark); font-size: 15px; font-weight: 700; font-family: var(--fb); background: var(--vsk-yellow) !important; }
 
-    .btn-primary:disabled {
-      background: var(--border);
-      color: var(--text3);
-      cursor: not-allowed;
-    }
+    /* ================================================ LOADING */
+    .loading-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(250,248,244,.82); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; }
+    .loading-card { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 40px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); color: var(--text2); font-size: 14px; }
+    .spinner { width: 34px; height: 34px; border: 3px solid var(--border); border-top-color: var(--vsk-dark); border-radius: 50%; animation: spin .75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .btn-outline {
-      padding: 10px 20px;
-      border: 1.5px solid var(--leaf);
-      color: var(--leaf);
-      border-radius: var(--r);
-      font-size: 14px;
-      font-weight: 500;
-      font-family: var(--fb);
-      background: transparent;
-      transition: background 0.15s;
-    }
+    /* ================================================ SUCCESS */
+    .success-screen { position: fixed; inset: 0; z-index: 150; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px 16px; overflow-y: auto; }
+    .success-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 400px; width: 100%; animation: fadeUp .4s ease; padding: 16px 0 24px; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    .success-icon { width: 72px; height: 72px; background: var(--vsk-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--vsk-yellow); font-size: 30px; box-shadow: 0 0 0 6px var(--leaf-bg), 0 0 0 9px var(--leaf-light); }
+    .success-title { font-family: var(--ff); font-size: 26px; font-weight: 600; color: var(--text); text-align: center; }
+    .status-pill { padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+    .pill-ok      { background: var(--leaf-bg);   color: var(--vsk-dark);  border: 1px solid var(--leaf-light); }
+    .pill-late    { background: var(--amber-bg);  color: var(--amber);     border: 1px solid var(--amber-light); }
+    .pill-invalid { background: var(--rose-bg);   color: var(--rose);      border: 1px solid var(--rose-light); }
+    .pill-izin    { background: #e6f5de;           color: var(--vsk-green); border: 1px solid var(--vsk-lime); }
+    .success-detail-card { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .detail-row { display: flex; padding: 11px 16px; border-bottom: 1px solid var(--border2); gap: 12px; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; min-width: 65px; flex-shrink: 0; padding-top: 1px; }
+    .detail-val { font-size: 14px; color: var(--text); flex: 1; word-break: break-word; }
+    .mono { font-family: var(--fm); }
 
-    .btn-outline:hover {
-      background: var(--leaf-bg);
-    }
-
-    /* ================================================
-       ERROR / ALERT
-       ================================================ */
-    .alert-error {
-      padding: 12px 14px;
-      background: var(--rose-bg);
-      border: 1px solid var(--rose-light);
-      border-radius: var(--r);
-      color: var(--rose);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    /* ================================================
-       FORM FOOTER NOTE
-       ================================================ */
-    .form-note {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text3);
-      margin-top: -6px;
-    }
-
-    /* ================================================
-       CAMERA OVERLAY (fullscreen)
-       ================================================ */
-    .cam-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cam-topbar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      padding-top: calc(14px + env(safe-area-inset-top));
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .cam-close-btn {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15) !important;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      transition: background 0.15s;
-    }
-
-    .cam-close-btn:hover {
-      background: rgba(255, 255, 255, 0.25) !important;
-    }
-
-    .cam-viewport {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: #111;
-    }
-
-    #cam-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);
-      /* Mirror untuk selfie */
-    }
-
-    #cam-preview {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .cam-bottombar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 2;
-      padding: 20px 24px;
-      padding-bottom: calc(24px + env(safe-area-inset-bottom));
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Capture button: classic camera shutter */
-    .capture-btn {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      border: 4px solid rgba(255, 255, 255, 0.9) !important;
-      background: rgba(255, 255, 255, 0.2) !important;
-      position: relative;
-      transition: transform 0.12s;
-    }
-
-    .capture-btn::after {
-      content: '';
-      position: absolute;
-      inset: 5px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform 0.12s;
-    }
-
-    .capture-btn:active {
-      transform: scale(0.91);
-    }
-
-    .capture-btn:active::after {
-      transform: scale(0.9);
-    }
-
-    /* Preview action buttons */
-    .cam-preview-actions {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-    }
-
-    .btn-cam-retake {
-      flex: 1;
-      padding: 13px;
-      border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-      border-radius: var(--r);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 500;
-      font-family: var(--fb);
-      background: rgba(255, 255, 255, 0.1) !important;
-      transition: background 0.15s;
-    }
-
-    .btn-cam-retake:hover {
-      background: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    .btn-cam-use {
-      flex: 1.3;
-      padding: 13px;
-      border-radius: var(--r);
-      color: var(--leaf);
-      font-size: 15px;
-      font-weight: 600;
-      font-family: var(--fb);
-      background: #fff !important;
-      transition: opacity 0.15s;
-    }
-
-    .btn-cam-use:hover {
-      opacity: 0.9;
-    }
-
-    /* ================================================
-       LOADING OVERLAY
-       ================================================ */
-    .loading-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: rgba(250, 248, 244, 0.8);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loading-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      padding: 32px 40px;
-      background: var(--card);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      color: var(--text2);
-      font-size: 14px;
-    }
-
-    .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3px solid var(--border);
-      border-top-color: var(--leaf);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* ================================================
-       SUCCESS SCREEN
-       ================================================ */
-    .success-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 150;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      overflow-y: auto;
-    }
-
-    .success-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      max-width: 400px;
-      width: 100%;
-      animation: fadeUp 0.4s ease;
-      padding: 16px 0 24px;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(18px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .success-icon {
-      width: 68px;
-      height: 68px;
-      background: var(--leaf);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 28px;
-    }
-
-    .success-title {
-      font-family: var(--ff);
-      font-size: 26px;
-      font-weight: 600;
-      color: var(--text);
-      text-align: center;
-    }
-
-    .status-pill {
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .pill-ok {
-      background: var(--leaf-bg);
-      color: var(--leaf);
-      border: 1px solid var(--leaf-light);
-    }
-
-    .pill-late {
-      background: var(--amber-bg);
-      color: var(--amber);
-      border: 1px solid var(--amber-light);
-    }
-
-    .pill-invalid {
-      background: var(--rose-bg);
-      color: var(--rose);
-      border: 1px solid var(--rose-light);
-    }
-
-    .pill-izin {
-      background: #eef0fc;
-      color: #5055a0;
-      border: 1px solid #c8ccec;
-    }
-
-    .success-detail-card {
-      width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-
-    .detail-row {
-      display: flex;
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border2);
-      gap: 12px;
-    }
-
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-
-    .detail-key {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      min-width: 60px;
-      padding-top: 1px;
-      flex-shrink: 0;
-    }
-
-    .detail-val {
-      font-size: 14px;
-      color: var(--text);
-      flex: 1;
-      word-break: break-word;
-    }
-
-    .mono {
-      font-family: var(--fm);
-    }
-
-    /* ================================================
-       UTILITY
-       ================================================ */
-    .hidden {
-      display: none !important;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--border2);
-      margin: 0 -0px;
-    }
+    /* ================================================ UTILS */
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   </style>
 </head>
-
 <body>
-  <div id="app">
+<div id="app">
 
-    <!-- ================================================
-       CAMERA OVERLAY (fullscreen)
-       ================================================ -->
-    <div id="cam-overlay" class="cam-overlay hidden">
-      <div class="cam-topbar">
-        <button id="btn-cam-close" class="cam-close-btn" aria-label="Tutup kamera">✕</button>
-        <span>Ambil Selfie</span>
-        <div style="width:34px"></div>
+  <!-- CAMERA OVERLAY -->
+  <div id="cam-overlay" class="cam-overlay hidden">
+    <div class="cam-topbar">
+      <button id="btn-cam-close" class="cam-close-btn" aria-label="Tutup kamera">✕</button>
+      <span id="cam-title">Ambil Selfie</span>
+      <div style="width:34px"></div>
+    </div>
+    <div class="cam-viewport">
+      <video id="cam-video" autoplay playsinline muted></video>
+      <img id="cam-preview" class="hidden" alt="Preview" />
+    </div>
+    <div class="cam-bottombar">
+      <div id="cam-ctrl-capture">
+        <button id="btn-capture" class="capture-btn" aria-label="Ambil foto"></button>
       </div>
-      <div class="cam-viewport" id="cam-viewport">
-        <video id="cam-video" autoplay playsinline muted></video>
-        <img id="cam-preview" class="hidden" alt="Preview selfie" />
-      </div>
-      <div class="cam-bottombar">
-        <div id="cam-ctrl-capture">
-          <button id="btn-capture" class="capture-btn" aria-label="Ambil foto"></button>
-        </div>
-        <div id="cam-ctrl-preview" class="cam-preview-actions hidden">
-          <button id="btn-cam-retake" class="btn-cam-retake">Ambil Ulang</button>
-          <button id="btn-cam-use" class="btn-cam-use">Gunakan Foto ✓</button>
-        </div>
+      <div id="cam-ctrl-preview" class="cam-preview-actions hidden">
+        <button id="btn-cam-retake" class="btn-cam-retake">Ambil Ulang</button>
+        <button id="btn-cam-use"    class="btn-cam-use">✓ Gunakan</button>
       </div>
     </div>
+  </div>
 
-    <!-- ================================================
-       LOADING OVERLAY
-       ================================================ -->
-    <div id="loading-overlay" class="loading-overlay hidden" role="status" aria-live="polite">
-      <div class="loading-card">
-        <div class="spinner"></div>
-        <span>Mengirim absensi…</span>
-      </div>
+  <!-- LOADING -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <span>Mengirim absensi…</span>
     </div>
+  </div>
 
-    <!-- ================================================
-       SUCCESS SCREEN
-       ================================================ -->
-    <div id="view-success" class="success-screen hidden" role="alert">
-      <div class="success-inner">
-        <div class="success-icon">✓</div>
-        <h1 class="success-title">Absensi Tercatat!</h1>
-        <div id="s-pill" class="status-pill pill-ok">—</div>
+  <!-- SUCCESS -->
+  <div id="view-success" class="success-screen hidden" role="alert">
+    <div class="success-inner">
+      <div class="success-icon">✓</div>
+      <h1 class="success-title">Absensi Tercatat!</h1>
+      <div id="s-pill" class="status-pill pill-ok">—</div>
+      <div class="success-detail-card">
+        <div class="detail-row"><span class="detail-key">Nama</span><span id="s-nama" class="detail-val">—</span></div>
+        <div class="detail-row"><span class="detail-key">Waktu</span><span id="s-waktu" class="detail-val mono">—</span></div>
+        <div class="detail-row"><span class="detail-key">Lokasi</span><span id="s-lokasi" class="detail-val">—</span></div>
+        <div class="detail-row" id="s-row-tipe"  style="display:none"><span class="detail-key">Tipe</span><span id="s-tipe"  class="detail-val">—</span></div>
+        <div class="detail-row" id="s-row-ket"   style="display:none"><span class="detail-key">Ket.</span><span id="s-ket"   class="detail-val">—</span></div>
+      </div>
+      <button id="btn-absensi-lagi" class="btn-primary" style="margin-top:4px">Absensi Lagi</button>
+    </div>
+  </div>
 
-        <div class="success-detail-card">
-          <div class="detail-row">
-            <span class="detail-key">Nama</span>
-            <span id="s-nama" class="detail-val">—</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">Waktu</span>
-            <span id="s-waktu" class="detail-val mono">—</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-key">Lokasi</span>
-            <span id="s-lokasi" class="detail-val">—</span>
-          </div>
-          <div class="detail-row" id="s-row-ket" style="display:none">
-            <span class="detail-key">Ket.</span>
-            <span id="s-ket" class="detail-val">—</span>
-          </div>
+  <!-- MAIN FORM -->
+  <div id="view-form">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="34" height="34" rx="9" fill="#03473C"/>
+            <path d="M17 7C11 7 8 12 8 17C8 22 11 27 17 27" stroke="#6FBC33" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <path d="M17 7C21 9 24 13 22 18C20 22 17 27 17 27" stroke="#6FBC33" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <circle cx="17" cy="17" r="2.5" fill="#FFD333"/>
+            <path d="M11.5 22.5L17 17" stroke="#FFD333" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
         </div>
-
-        <button id="btn-absensi-lagi" class="btn-primary" style="margin-top:4px">
-          Absensi Lagi
-        </button>
+        <div>
+          <div class="brand-name">VSK Absensi</div>
+          <div class="brand-sub">PT Varian Sumber Karya</div>
+        </div>
       </div>
+      <div class="time-block">
+        <div id="clock-time" class="clock-time">--:--:--</div>
+        <div id="clock-date" class="clock-date">---</div>
+      </div>
+    </header>
+
+    <div id="gps-bar" class="gps-bar gps-loading" role="status" aria-live="polite">
+      <div class="gps-dot"></div>
+      <span id="gps-label" class="gps-label">Mendeteksi lokasi GPS…</span>
+      <button id="btn-refresh-gps" class="gps-refresh-btn hidden" aria-label="Refresh GPS">↺</button>
     </div>
 
-    <!-- ================================================
-       MAIN FORM VIEW
-       ================================================ -->
-    <div id="view-form">
+    <!-- Form + GPS block overlay wrapper -->
+    <div class="form-wrapper">
 
-      <!-- Header -->
-      <header class="app-header">
-        <div class="brand">
-          <div class="brand-logo">
-            <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="34" height="34" rx="9" fill="#3d6b47" />
-              <path d="M17 7 C11 7 8 12 8 17 C8 22 11 27 17 27" stroke="white" stroke-width="2.2" stroke-linecap="round"
-                fill="none" />
-              <path d="M17 7 C21 9 24 13 22 18 C20 22 17 27 17 27" stroke="white" stroke-width="2.2"
-                stroke-linecap="round" fill="none" />
-              <path d="M12 22 L17 17" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" />
+      <!-- GPS BLOCK OVERLAY (Masuk/Pulang, GPS belum aktif) -->
+      <div id="gps-block" class="gps-block hidden">
+        <div class="gps-block-inner">
+          <div class="gps-block-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
           </div>
-          <div>
-            <div class="brand-name">VSK Absensi</div>
-            <div class="brand-sub">PT Varian Sumber Karya</div>
-          </div>
-        </div>
-        <div class="time-block">
-          <div id="clock-time" class="clock-time">--:--:--</div>
-          <div id="clock-date" class="clock-date">---</div>
-        </div>
-      </header>
+          <p class="gps-block-title">GPS Wajib Aktif</p>
+          <p class="gps-block-desc">Absensi <strong>Masuk</strong> dan <strong>Pulang</strong> memerlukan GPS aktif untuk verifikasi lokasi. Aktifkan GPS di HP kamu, lalu tekan <em>Coba Lagi</em>.</p>
 
-      <!-- GPS Status Bar -->
-      <div id="gps-bar" class="gps-bar gps-loading" role="status" aria-live="polite">
-        <div class="gps-dot"></div>
-        <span id="gps-label" class="gps-label">Mendeteksi lokasi GPS…</span>
-        <button id="btn-refresh-gps" class="gps-refresh-btn hidden" title="Refresh GPS"
-          aria-label="Refresh lokasi GPS">↺</button>
+          <div class="gps-block-actions">
+            <!-- Tombol buka settings (Android deep link; iOS diabaikan browser) -->
+            <a id="btn-open-settings" href="#" class="btn-open-settings" onclick="return openLocationSettings()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Buka Pengaturan Lokasi
+            </a>
+            <button class="btn-retry-gps" onclick="retryGPS()">
+              ↺ Coba Lagi Deteksi GPS
+            </button>
+          </div>
+
+          <p class="gps-block-note" id="gps-block-note">
+            Jika tombol di atas tidak membuka pengaturan,<br>buka <strong>Pengaturan → Lokasi</strong> secara manual lalu aktifkan GPS.
+          </p>
+        </div>
       </div>
 
-      <!-- Form -->
       <main class="main-form">
 
         <!-- Nama -->
         <div class="form-field">
-          <label for="input-nama" class="field-label">
-            Nama Staff
-          </label>
-          <input type="text" id="input-nama" class="field-input" placeholder="Masukkan nama lengkap" autocomplete="name"
-            autocapitalize="words" spellcheck="false" />
+          <label for="input-nama" class="field-label">Nama Staff</label>
+          <input type="text" id="input-nama" class="field-input" placeholder="Masukkan nama lengkap" autocomplete="name" autocapitalize="words" spellcheck="false" />
         </div>
 
-        <!-- Jenis Absensi -->
+        <!-- Jenis -->
         <div class="form-field">
           <label class="field-label">Jenis Absensi</label>
-          <div class="jenis-grid" role="group" aria-label="Pilih jenis absensi">
-            <button class="jenis-btn" data-jenis="Masuk" type="button" aria-pressed="false">
+          <div class="jenis-grid" role="group">
+            <button class="jenis-btn" data-jenis="Masuk"  type="button" aria-pressed="false">
               <div class="ji">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                  <polyline points="10 17 15 12 10 7" />
-                  <line x1="15" y1="12" x2="3" y2="12" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
                 </svg>
               </div>
-              <span>Masuk</span>
+              <span class="jenis-label">Masuk</span>
             </button>
             <button class="jenis-btn" data-jenis="Pulang" type="button" aria-pressed="false">
               <div class="ji">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                 </svg>
               </div>
-              <span>Pulang</span>
+              <span class="jenis-label">Pulang</span>
             </button>
-            <button class="jenis-btn" data-jenis="Izin" type="button" aria-pressed="false">
+            <button class="jenis-btn" data-jenis="Izin"   type="button" aria-pressed="false">
               <div class="ji">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
               </div>
-              <span>Izin</span>
+              <span class="jenis-label">Izin</span>
             </button>
           </div>
         </div>
 
-        <!-- Foto Selfie (Masuk / Pulang) -->
+        <!-- ─── SEKSI MASUK / PULANG ─── -->
         <div id="section-foto" class="form-field hidden">
-          <label class="field-label">
-            Foto Selfie
-            <span class="field-badge badge-required">wajib</span>
-          </label>
+          <label class="field-label">Foto Selfie <span class="field-badge badge-required">wajib</span></label>
           <div class="foto-box">
-            <!-- Empty state -->
             <div id="foto-empty" class="foto-empty">
               <div class="foto-empty-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
                 </svg>
               </div>
               <p class="foto-empty-text">Ambil foto selfie untuk<br>verifikasi kehadiran</p>
-              <button id="btn-open-cam" type="button" class="btn-outline">
-                Buka Kamera
-              </button>
-              <!-- Fallback file input (hidden) -->
-              <input type="file" id="file-input" accept="image/*" capture="user" class="sr-only" aria-hidden="true"
-                tabindex="-1" />
+              <button id="btn-open-cam" type="button" class="btn-outline">Buka Kamera</button>
+              <input type="file" id="file-input" accept="image/*" capture="user" class="sr-only" aria-hidden="true" tabindex="-1" />
             </div>
-            <!-- Filled state (after photo taken) -->
             <div id="foto-filled" class="foto-filled hidden">
-              <img id="foto-thumb" alt="Foto selfie" />
+              <img id="foto-thumb" alt="Foto selfie + watermark" />
               <div class="foto-retake-overlay">
-                <button id="btn-foto-retake" type="button" class="btn-retake-inline">
-                  ↺ Ambil Ulang
-                </button>
+                <button id="btn-foto-retake" type="button" class="btn-retake-inline">↺ Ambil Ulang</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Keterangan (Izin) -->
-        <div id="section-keterangan" class="form-field hidden">
-          <label for="input-keterangan" class="field-label">
-            Keterangan
-            <span class="field-badge badge-required">wajib</span>
+        <!-- ─── SEKSI IZIN ─── -->
+        <!-- Tipe Izin dropdown -->
+        <div id="section-tipe-izin" class="form-field hidden">
+          <label for="select-tipe-izin" class="field-label">
+            Tipe Izin <span class="field-badge badge-required">wajib</span>
           </label>
-          <textarea id="input-keterangan" class="field-textarea"
-            placeholder="Contoh: Sakit demam, tidak bisa masuk hari ini. Akan kembali besok." rows="3"></textarea>
+          <select id="select-tipe-izin" class="field-select placeholder">
+            <option value="" disabled selected>— Pilih tipe izin —</option>
+            <option value="Izin Cuti">Izin Cuti</option>
+            <option value="Izin Sakit">Izin Sakit</option>
+          </select>
         </div>
 
-        <!-- Error alert -->
+        <!-- Surat Dokter (hanya muncul jika Izin Sakit) -->
+        <div id="section-surat-dokter" class="form-field hidden">
+          <label class="field-label">
+            Surat Dokter <span class="field-badge badge-required">wajib</span>
+          </label>
+          <div class="surat-box">
+            <div id="surat-empty" class="surat-empty">
+              <div class="surat-empty-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+              </div>
+              <p class="surat-empty-text">Upload foto atau gambar<br>surat dokter</p>
+              <button id="btn-open-surat" type="button" class="btn-outline" style="margin-top:4px">
+                Pilih File
+              </button>
+              <input type="file" id="surat-input" accept="image/*,application/pdf" class="sr-only" aria-hidden="true" tabindex="-1" />
+            </div>
+            <div id="surat-filled" class="surat-filled hidden">
+              <div class="surat-thumb-wrap">
+                <img id="surat-thumb" alt="Preview surat dokter" class="hidden" />
+                <div id="surat-file-icon" class="surat-file-icon hidden">📄</div>
+              </div>
+              <div class="surat-info">
+                <div id="surat-fname" class="surat-fname">—</div>
+                <div id="surat-fsize" class="surat-fsize">—</div>
+              </div>
+              <button id="btn-surat-remove" class="surat-remove-btn" aria-label="Hapus file">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keterangan -->
+        <div id="section-keterangan" class="form-field hidden">
+          <label for="input-keterangan" class="field-label">
+            Keterangan <span class="field-badge badge-required">wajib</span>
+          </label>
+          <textarea id="input-keterangan" class="field-textarea" rows="3"
+                    placeholder="Contoh: Sakit demam, tidak bisa masuk hari ini."></textarea>
+        </div>
+
+        <!-- Error -->
         <div id="submit-error" class="alert-error hidden" role="alert"></div>
 
         <!-- Submit -->
-        <button id="btn-submit" type="button" class="btn-primary" disabled>
-          Kirim Absensi
-        </button>
-
-        <p class="form-note">
-          Waktu dicatat otomatis oleh server &middot; tidak bisa dimanipulasi
-        </p>
+        <button id="btn-submit" type="button" class="btn-primary" disabled>Kirim Absensi</button>
+        <p class="form-note">Waktu dicatat otomatis oleh server &middot; tidak bisa dimanipulasi</p>
 
       </main>
-    </div>
+    </div><!-- /.form-wrapper -->
+  </div><!-- /#view-form -->
+</div><!-- /#app -->
 
-  </div><!-- /#app -->
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+const APPS_SCRIPT_URL = 'GANTI_DENGAN_URL_APPS_SCRIPT_KAMU';
+const FACTORY_LAT   = -7.4953618;
+const FACTORY_LNG   = 112.6301287;
+const RADIUS_METERS = 200;
 
-  <script>
-    // ============================================================
-    //  KONFIGURASI — WAJIB DIISI SEBELUM DEPLOY
-    // ============================================================
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsInMUU0CfunVDMPWelt_s-CpiVgX774qD523BeXS7CuQcRPKHeVPOQX0StD3CO8vvgw/exec';
+// ============================================================
+//  STATE
+// ============================================================
+let gpsLat = null, gpsLng = null, gpsDist = null, gpsStatus = 'loading';
+let selJenis = null, fotoUrl = null, suratFile = null, suratUrl = null;
+let camStream = null, camMode = 'selfie'; // 'selfie' | 'surat'
 
-    const FACTORY_LAT = -7.4967097;
-    const FACTORY_LNG = 112.6289471;
-    const RADIUS_METERS = 100;
+// ============================================================
+//  ELEMENTS
+// ============================================================
+const el = id => document.getElementById(id);
+const $clockTime      = el('clock-time'),       $clockDate      = el('clock-date');
+const $gpsBar         = el('gps-bar'),           $gpsLabel       = el('gps-label');
+const $btnRefGps      = el('btn-refresh-gps');
+const $gpsBlock       = el('gps-block');
+const $inputNama      = el('input-nama'),         $inputKet       = el('input-keterangan');
+const $selectTipe     = el('select-tipe-izin');
+const $jenisBtns      = document.querySelectorAll('.jenis-btn');
+const $secFoto        = el('section-foto'),       $secKet         = el('section-keterangan');
+const $secTipeIzin    = el('section-tipe-izin'),  $secSurat       = el('section-surat-dokter');
+const $fotoEmpty      = el('foto-empty'),         $fotoFilled     = el('foto-filled');
+const $fotoThumb      = el('foto-thumb');
+const $suratEmpty     = el('surat-empty'),        $suratFilled    = el('surat-filled');
+const $suratThumb     = el('surat-thumb'),        $suratFileIcon  = el('surat-file-icon');
+const $suratFname     = el('surat-fname'),        $suratFsize     = el('surat-fsize');
+const $btnSubmit      = el('btn-submit'),         $submitError    = el('submit-error');
+const $camOverlay     = el('cam-overlay'),        $camVideo       = el('cam-video');
+const $camPreview     = el('cam-preview'),        $camCtrlCap     = el('cam-ctrl-capture');
+const $camCtrlPrev    = el('cam-ctrl-preview'),   $camTitle       = el('cam-title');
+const $btnOpenCam     = el('btn-open-cam'),       $fileInput      = el('file-input');
+const $btnOpenSurat   = el('btn-open-surat'),     $suratInput     = el('surat-input');
+const $btnSuratRemove = el('btn-surat-remove');
+const $btnCamClose    = el('btn-cam-close'),      $btnCapture     = el('btn-capture');
+const $btnCamRetake   = el('btn-cam-retake'),     $btnCamUse      = el('btn-cam-use');
+const $btnFotoRetake  = el('btn-foto-retake');
+const $loadingOv      = el('loading-overlay');
+const $viewSuccess    = el('view-success'),       $viewForm       = el('view-form');
+const $btnLagi        = el('btn-absensi-lagi');
 
-    // ============================================================
-    //  STATE
-    // ============================================================
-    let gpsLat = null;
-    let gpsLng = null;
-    let gpsDist = null;
-    let gpsStatus = 'loading';  // loading | ok | outside | error
-    let selJenis = null;       // Masuk | Pulang | Izin
-    let fotoUrl = null;       // base64 dataURL dari kamera/file
-    let camStream = null;       // MediaStream aktif
+// ============================================================
+//  CLOCK
+// ============================================================
+function tickClock() {
+  const now = new Date();
+  $clockTime.textContent = now.toLocaleTimeString('id-ID');
+  $clockDate.textContent = now.toLocaleDateString('id-ID',
+    { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+tickClock(); setInterval(tickClock, 1000);
 
-    // ============================================================
-    //  ELEMENT REFS
-    // ============================================================
-    const el = id => document.getElementById(id);
+// ============================================================
+//  HAVERSINE
+// ============================================================
+function haversine(la1,lo1,la2,lo2) {
+  const R=6371000, r=x=>x*Math.PI/180;
+  const dL=r(la2-la1), dO=r(lo2-lo1);
+  const a=Math.sin(dL/2)**2+Math.cos(r(la1))*Math.cos(r(la2))*Math.sin(dO/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
 
-    const $clockTime = el('clock-time');
-    const $clockDate = el('clock-date');
-    const $gpsBar = el('gps-bar');
-    const $gpsLabel = el('gps-label');
-    const $btnRefreshGps = el('btn-refresh-gps');
-    const $inputNama = el('input-nama');
-    const $jenisBtns = document.querySelectorAll('.jenis-btn');
-    const $secFoto = el('section-foto');
-    const $secKet = el('section-keterangan');
-    const $fotoEmpty = el('foto-empty');
-    const $fotoFilled = el('foto-filled');
-    const $fotoThumb = el('foto-thumb');
-    const $inputKet = el('input-keterangan');
-    const $btnSubmit = el('btn-submit');
-    const $submitError = el('submit-error');
-    // Camera
-    const $camOverlay = el('cam-overlay');
-    const $camVideo = el('cam-video');
-    const $camPreview = el('cam-preview');
-    const $camCtrlCap = el('cam-ctrl-capture');
-    const $camCtrlPrev = el('cam-ctrl-preview');
-    const $btnOpenCam = el('btn-open-cam');
-    const $fileInput = el('file-input');
-    const $btnCamClose = el('btn-cam-close');
-    const $btnCapture = el('btn-capture');
-    const $btnCamRetake = el('btn-cam-retake');
-    const $btnCamUse = el('btn-cam-use');
-    const $btnFotoRetake = el('btn-foto-retake');
-    // Overlays
-    const $loadingOv = el('loading-overlay');
-    // Success
-    const $viewSuccess = el('view-success');
-    const $viewForm = el('view-form');
-    const $btnLagi = el('btn-absensi-lagi');
-
-    // ============================================================
-    //  CLOCK (display only — timestamp dari server)
-    // ============================================================
-    function tickClock() {
-      const now = new Date();
-      $clockTime.textContent = now.toLocaleTimeString('id-ID');
-      $clockDate.textContent = now.toLocaleDateString('id-ID', {
-        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-      });
-    }
-    tickClock();
-    setInterval(tickClock, 1000);
-
-    // ============================================================
-    //  HAVERSINE (untuk preview di frontend, bukan validasi final)
-    // ============================================================
-    function haversine(lat1, lon1, lat2, lon2) {
-      const R = 6371000, r = x => x * Math.PI / 180;
-      const dL = r(lat2 - lat1), dO = r(lon2 - lon1);
-      const a = Math.sin(dL / 2) ** 2 + Math.cos(r(lat1)) * Math.cos(r(lat2)) * Math.sin(dO / 2) ** 2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    // ============================================================
-    //  GPS
-    // ============================================================
-    function initGPS() {
-      gpsStatus = 'loading';
-      setGPSBar('loading', 'Mendeteksi lokasi GPS…');
-      $btnRefreshGps.classList.add('hidden');
-
-      if (!navigator.geolocation) {
-        setGPSBar('error', 'GPS tidak didukung browser ini');
-        $btnRefreshGps.classList.remove('hidden');
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const { latitude: lat, longitude: lng } = pos.coords;
-          const dist = Math.round(haversine(lat, lng, FACTORY_LAT, FACTORY_LNG));
-          gpsLat = lat; gpsLng = lng; gpsDist = dist;
-          const inRadius = dist <= RADIUS_METERS;
-          gpsStatus = inRadius ? 'ok' : 'outside';
-          const label = inRadius
-            ? `Di lokasi pabrik · ${dist} m dari pusat`
-            : `Di luar radius · ${dist} m dari pabrik · absensi akan di-flag`;
-          setGPSBar(gpsStatus, label);
-          $btnRefreshGps.classList.remove('hidden');
-          validateForm();
-        },
-        err => {
-          let msg = 'GPS tidak tersedia — absensi tetap bisa dikirim';
-          if (err.code === 1) msg = 'Izin GPS ditolak — absensi tetap bisa dikirim';
-          if (err.code === 3) msg = 'Timeout GPS — absensi tetap bisa dikirim';
-          gpsStatus = 'error';
-          setGPSBar('error', msg);
-          $btnRefreshGps.classList.remove('hidden');
-          validateForm();
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+// ============================================================
+//  GPS
+// ============================================================
+function initGPS() {
+  gpsStatus = 'loading';
+  $gpsBar.className = 'gps-bar gps-loading';
+  $gpsLabel.textContent = 'Mendeteksi lokasi GPS…';
+  $btnRefGps.classList.add('hidden');
+  if (!navigator.geolocation) {
+    applyGPS('error', null, null, null, 'GPS tidak didukung browser ini');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude:lat, longitude:lng } = pos.coords;
+      const dist = Math.round(haversine(lat, lng, FACTORY_LAT, FACTORY_LNG));
+      const inR  = dist <= RADIUS_METERS;
+      applyGPS(
+        inR ? 'ok' : 'outside', lat, lng, dist,
+        inR ? `Di lokasi pabrik · ${dist} m dari pusat`
+            : `Di luar radius · ${dist} m dari pabrik · akan di-flag`
       );
-    }
-
-    function setGPSBar(status, label) {
-      $gpsBar.className = 'gps-bar gps-' + status;
-      $gpsLabel.textContent = label;
-    }
-
-    $btnRefreshGps.addEventListener('click', initGPS);
-
-    // ============================================================
-    //  PILIH JENIS ABSENSI
-    // ============================================================
-    $jenisBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        $jenisBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
-        selJenis = btn.dataset.jenis;
-
-        if (selJenis === 'Masuk' || selJenis === 'Pulang') {
-          $secFoto.classList.remove('hidden');
-          $secKet.classList.add('hidden');
-          $inputKet.value = '';
-        } else {
-          $secKet.classList.remove('hidden');
-          $secFoto.classList.add('hidden');
-          // Clear foto
-          fotoUrl = null;
-          $fotoEmpty.classList.remove('hidden');
-          $fotoFilled.classList.add('hidden');
-          $fotoThumb.src = '';
-        }
-        validateForm();
-      });
-    });
-
-    // ============================================================
-    //  KAMERA
-    // ============================================================
-    $btnOpenCam.addEventListener('click', openCamera);
-    $btnFotoRetake.addEventListener('click', () => { fotoUrl = null; resetFotoUI(); openCamera(); });
-    $btnCamClose.addEventListener('click', closeCameraOverlay);
-    $btnCapture.addEventListener('click', captureFrame);
-    $btnCamRetake.addEventListener('click', resetToLiveView);
-    $btnCamUse.addEventListener('click', useCapture);
-
-    async function openCamera() {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: false
-          });
-          camStream = stream;
-          $camVideo.srcObject = stream;
-          await $camVideo.play();
-          // Show live view
-          $camVideo.classList.remove('hidden');
-          $camPreview.classList.add('hidden');
-          $camCtrlCap.classList.remove('hidden');
-          $camCtrlPrev.classList.add('hidden');
-          $camOverlay.classList.remove('hidden');
-          return;
-        } catch (err) {
-          console.warn('[VSK Cam] getUserMedia gagal, fallback ke file input:', err.message);
-          stopStream();
-        }
-      }
-      // Fallback: native camera via file input
-      $fileInput.click();
-    }
-
-    function captureFrame() {
-      if (!$camVideo.videoWidth) return;
-      const canvas = document.createElement('canvas');
-      const MAX = 1024;
-      let w = $camVideo.videoWidth, h = $camVideo.videoHeight;
-      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-      canvas.width = w; canvas.height = h;
-      // Kamera sudah di-mirror di CSS; simpan tanpa mirror agar teks terbaca normal
-      canvas.getContext('2d').drawImage($camVideo, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
-      // Tampilkan preview
-      $camPreview.src = dataUrl;
-      $camPreview.classList.remove('hidden');
-      $camVideo.classList.add('hidden');
-      $camCtrlCap.classList.add('hidden');
-      $camCtrlPrev.classList.remove('hidden');
-      $camOverlay.dataset.pending = dataUrl;
-    }
-
-    function resetToLiveView() {
-      $camPreview.classList.add('hidden');
-      $camVideo.classList.remove('hidden');
-      $camCtrlCap.classList.remove('hidden');
-      $camCtrlPrev.classList.add('hidden');
-      $camOverlay.dataset.pending = '';
-    }
-
-    function useCapture() {
-      const dataUrl = $camOverlay.dataset.pending;
-      if (!dataUrl) return;
-      fotoUrl = dataUrl;
-      $fotoThumb.src = dataUrl;
-      $fotoEmpty.classList.add('hidden');
-      $fotoFilled.classList.remove('hidden');
-      closeCameraOverlay();
+      evaluateGPSBlock();
       validateForm();
-    }
+    },
+    err => {
+      const msgs = { 1:'Izin GPS ditolak', 2:'GPS tidak tersedia', 3:'Timeout GPS' };
+      applyGPS('error', null, null, null, (msgs[err.code] || 'GPS error') + ' — aktifkan GPS dan coba lagi');
+      evaluateGPSBlock();
+      validateForm();
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
 
-    function closeCameraOverlay() {
-      stopStream();
-      $camOverlay.classList.add('hidden');
-      $camOverlay.dataset.pending = '';
-    }
+function applyGPS(status, lat, lng, dist, label) {
+  gpsStatus = status; gpsLat = lat; gpsLng = lng; gpsDist = dist;
+  $gpsBar.className = 'gps-bar gps-' + status;
+  $gpsLabel.textContent = label;
+  $btnRefGps.classList.remove('hidden');
+}
 
-    function stopStream() {
-      if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
-      $camVideo.srcObject = null;
-    }
+// Evaluasi apakah GPS block overlay harus tampil
+function evaluateGPSBlock() {
+  const needsBlock = (selJenis === 'Masuk' || selJenis === 'Pulang')
+                     && (gpsStatus === 'error' || gpsStatus === 'loading');
+  if (needsBlock) {
+    $gpsBlock.classList.remove('hidden');
+  } else {
+    $gpsBlock.classList.add('hidden');
+  }
+}
 
-    function resetFotoUI() {
-      $fotoEmpty.classList.remove('hidden');
-      $fotoFilled.classList.add('hidden');
-      $fotoThumb.src = '';
-    }
+// Fungsi buka pengaturan lokasi — dipanggil dari onclick di HTML
+function openLocationSettings() {
+  // Deteksi platform secara kasar
+  const ua = navigator.userAgent;
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /iphone|ipad|ipod/i.test(ua);
 
-    // File input fallback
-    $fileInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX = 1024;
-          let w = img.width, h = img.height;
-          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          fotoUrl = canvas.toDataURL('image/jpeg', 0.82);
-          $fotoThumb.src = fotoUrl;
-          $fotoEmpty.classList.add('hidden');
-          $fotoFilled.classList.remove('hidden');
-          validateForm();
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-      $fileInput.value = ''; // reset agar bisa pilih foto yang sama lagi
-    });
+  if (isAndroid) {
+    // Android: intent deep link ke location settings
+    window.location.href = 'intent://settings/location#Intent;scheme=android-app;end';
+    // Fallback setelah 800ms jika intent gagal (beberapa browser blokir)
+    setTimeout(() => {
+      // Coba via geo: URI prompt
+      window.location.href = 'geo:0,0?q=location+settings';
+    }, 800);
+  } else if (isIOS) {
+    // iOS tidak bisa deep link ke GPS settings, arahkan ke Settings app
+    window.location.href = 'app-settings:';
+  }
+  // Setelah user kembali, tampilkan note
+  el('gps-block-note').textContent = 'Setelah mengaktifkan GPS, kembali ke halaman ini dan tekan "Coba Lagi Deteksi GPS".';
+  return false; // prevent default <a> navigation
+}
 
-    // ============================================================
-    //  VALIDASI FORM
-    // ============================================================
-    function validateForm() {
-      const namaOk = $inputNama.value.trim().length > 0;
-      const jenisOk = selJenis !== null;
-      let contOk = false;
-      if (selJenis === 'Masuk' || selJenis === 'Pulang') contOk = fotoUrl !== null;
-      if (selJenis === 'Izin') contOk = $inputKet.value.trim().length > 0;
-      $btnSubmit.disabled = !(namaOk && jenisOk && contOk);
-    }
+// Retry GPS — dipanggil dari onclick di HTML
+function retryGPS() {
+  gpsStatus = 'loading';
+  $gpsBar.className = 'gps-bar gps-loading';
+  $gpsLabel.textContent = 'Mendeteksi ulang GPS…';
+  $btnRefGps.classList.add('hidden');
+  initGPS();
+}
 
-    $inputNama.addEventListener('input', validateForm);
-    $inputKet.addEventListener('input', validateForm);
+$btnRefGps.addEventListener('click', initGPS);
 
-    // ============================================================
-    //  SUBMIT
-    // ============================================================
-    $btnSubmit.addEventListener('click', submitAbsensi);
+// ============================================================
+//  WATERMARK
+// ============================================================
+function drawWatermark(canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const barH = Math.max(52, Math.round(h * 0.17));
+  const pad  = Math.round(w * 0.032);
+  const y0   = h - barH;
+  const grad = ctx.createLinearGradient(0, y0-24, 0, h);
+  grad.addColorStop(0,    'rgba(3,71,60,0)');
+  grad.addColorStop(0.25, 'rgba(3,71,60,0.88)');
+  grad.addColorStop(1,    'rgba(3,71,60,0.97)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, y0-24, w, barH+24);
+  ctx.fillStyle = '#FFD333';
+  ctx.fillRect(pad, y0 + Math.round(barH*0.1), Math.max(3, Math.round(w*0.008)), Math.round(barH*0.8));
+  const nama = $inputNama.value.trim() || 'Staff VSK';
+  const jenisTx = selJenis || '—';
+  const now = new Date();
+  const tgl = now.toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const jam = now.toLocaleTimeString('id-ID');
+  const fs1 = Math.max(11, Math.round(w * 0.038));
+  ctx.font = `bold ${fs1}px "Courier New", monospace`;
+  ctx.fillStyle = '#FFD333'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(`${nama}  ·  ${jenisTx}`, pad + Math.round(w*0.025), y0 + Math.round(barH*0.42));
+  const fs2 = Math.max(9, Math.round(w * 0.029));
+  ctx.font = `${fs2}px "Courier New", monospace`;
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fillText(`PT Varian Sumber Karya  ·  ${tgl} ${jam}`, pad + Math.round(w*0.025), y0 + Math.round(barH*0.75));
+}
 
-    async function submitAbsensi() {
-      const nama = $inputNama.value.trim();
-      if (!nama || !selJenis || $btnSubmit.disabled) return;
+// ============================================================
+//  CAMERA (shared — selfie & surat)
+// ============================================================
+$btnOpenCam.addEventListener('click',     () => openCamera('selfie'));
+$btnFotoRetake.addEventListener('click',  () => { fotoUrl=null; resetFotoUI(); openCamera('selfie'); });
+$btnCamClose.addEventListener('click',    closeCam);
+$btnCapture.addEventListener('click',     captureFrame);
+$btnCamRetake.addEventListener('click',   resetToLive);
+$btnCamUse.addEventListener('click',      useCapture);
 
-      const payload = {
-        nama,
-        jenis: selJenis,
-        lat: gpsLat,
-        lng: gpsLng,
-        foto: fotoUrl || null,
-        keterangan: $inputKet.value.trim() || null,
-      };
+async function openCamera(mode) {
+  camMode = mode || 'selfie';
+  $camTitle.textContent = camMode === 'surat' ? 'Foto Surat Dokter' : 'Ambil Selfie';
+  const facingMode = camMode === 'surat' ? 'environment' : 'user';
 
-      $loadingOv.classList.remove('hidden');
-      $submitError.classList.add('hidden');
-      $btnSubmit.disabled = true;
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(
+        { video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }
+      );
+      camStream = $camVideo.srcObject = stream;
+      // Mirror hanya untuk selfie
+      $camVideo.style.transform = (facingMode === 'user') ? 'scaleX(-1)' : 'scaleX(1)';
+      await $camVideo.play();
+      $camVideo.classList.remove('hidden'); $camPreview.classList.add('hidden');
+      $camCtrlCap.classList.remove('hidden'); $camCtrlPrev.classList.add('hidden');
+      $camOverlay.classList.remove('hidden');
+      return;
+    } catch(err) { console.warn('[VSK Cam]', err.message); stopStream(); }
+  }
+  // Fallback ke file input
+  if (camMode === 'surat') $suratInput.click();
+  else $fileInput.click();
+}
 
-      try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-          redirect: 'follow',
-        });
+function captureFrame() {
+  if (!$camVideo.videoWidth) return;
+  const canvas = document.createElement('canvas');
+  const MAX = 1280;
+  let w = $camVideo.videoWidth, h = $camVideo.videoHeight;
+  if (w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  // Mirror flip jika selfie
+  if (camMode === 'selfie') { ctx.translate(w, 0); ctx.scale(-1, 1); }
+  ctx.drawImage($camVideo, 0, 0, w, h);
+  if (camMode === 'selfie') { ctx.setTransform(1,0,0,1,0,0); drawWatermark(canvas); }
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  $camPreview.src = dataUrl; $camPreview.classList.remove('hidden'); $camVideo.classList.add('hidden');
+  $camCtrlCap.classList.add('hidden'); $camCtrlPrev.classList.remove('hidden');
+  $camOverlay.dataset.pending = dataUrl;
+}
 
-        let data;
-        try { data = await res.json(); }
-        catch { throw new Error('Respons server tidak terbaca. Periksa URL Apps Script kamu.'); }
+function resetToLive() {
+  $camPreview.classList.add('hidden'); $camVideo.classList.remove('hidden');
+  $camCtrlCap.classList.remove('hidden'); $camCtrlPrev.classList.add('hidden');
+  $camOverlay.dataset.pending = '';
+}
 
-        if (!data.success) throw new Error(data.error || 'Terjadi kesalahan di server.');
+function useCapture() {
+  const dataUrl = $camOverlay.dataset.pending; if (!dataUrl) return;
+  if (camMode === 'surat') {
+    applySuratFile(null, dataUrl);
+  } else {
+    fotoUrl = dataUrl; $fotoThumb.src = dataUrl;
+    $fotoEmpty.classList.add('hidden'); $fotoFilled.classList.remove('hidden');
+  }
+  closeCam(); validateForm();
+}
 
-        showSuccess({ nama, jenis: selJenis, ...data });
+function closeCam() { stopStream(); $camOverlay.classList.add('hidden'); $camOverlay.dataset.pending = ''; }
+function stopStream() { if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;} $camVideo.srcObject=null; }
+function resetFotoUI() { $fotoEmpty.classList.remove('hidden'); $fotoFilled.classList.add('hidden'); $fotoThumb.src=''; }
 
-      } catch (err) {
-        let msg = err.message;
-        if (err instanceof TypeError) msg = 'Tidak dapat menghubungi server. Periksa koneksi internet dan coba lagi.';
-        $submitError.textContent = msg;
-        $submitError.classList.remove('hidden');
-        $btnSubmit.disabled = false;
-      } finally {
-        $loadingOv.classList.add('hidden');
-      }
-    }
+// File input — selfie fallback
+$fileInput.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 1024; let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      drawWatermark(canvas);
+      fotoUrl = canvas.toDataURL('image/jpeg', 0.85);
+      $fotoThumb.src = fotoUrl;
+      $fotoEmpty.classList.add('hidden'); $fotoFilled.classList.remove('hidden');
+      validateForm();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file); $fileInput.value = '';
+});
 
-    // ============================================================
-    //  SUCCESS SCREEN
-    // ============================================================
-    function showSuccess(info) {
-      el('s-nama').textContent = info.nama;
-      el('s-waktu').textContent = info.timestamp || '—';
+// ============================================================
+//  SURAT DOKTER
+// ============================================================
+$btnOpenSurat.addEventListener('click', () => {
+  // Bisa foto langsung atau pilih file
+  $suratInput.click();
+});
 
-      // Lokasi
-      let lokasiTxt = 'GPS tidak tersedia';
-      if (info.jarak !== null && info.jarak !== undefined) {
-        const valid = info.dalamRadius ? '✓ Dalam Radius' : '⚠ Di Luar Radius';
-        lokasiTxt = `${info.jarak} m dari pabrik · ${valid}`;
-      }
-      el('s-lokasi').textContent = lokasiTxt;
+$suratInput.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => applySuratFile(file, ev.target.result);
+  reader.readAsDataURL(file);
+  $suratInput.value = '';
+});
 
-      // Keterangan
-      const sRowKet = el('s-row-ket');
-      if (info.jenis === 'Izin' && $inputKet.value.trim()) {
-        el('s-ket').textContent = $inputKet.value.trim();
-        sRowKet.style.display = 'flex';
-      } else {
-        sRowKet.style.display = 'none';
-      }
+$btnSuratRemove.addEventListener('click', () => {
+  suratFile = null; suratUrl = null;
+  $suratEmpty.classList.remove('hidden'); $suratFilled.classList.add('hidden');
+  $suratThumb.src = ''; $suratThumb.classList.add('hidden');
+  $suratFileIcon.classList.add('hidden');
+  validateForm();
+});
 
-      // Status pill
-      const pill = el('s-pill');
-      pill.textContent = info.status || info.jenis;
-      pill.className = 'status-pill';
-      if ((info.status || '').includes('TIDAK VALID')) pill.classList.add('pill-invalid');
-      else if ((info.status || '').includes('Telat')) pill.classList.add('pill-late');
-      else if (info.jenis === 'Izin') pill.classList.add('pill-izin');
-      else pill.classList.add('pill-ok');
+function applySuratFile(file, dataUrl) {
+  suratUrl = dataUrl;
+  suratFile = file;
+  const isImage = !file || file.type.startsWith('image/');
+  if (isImage) {
+    $suratThumb.src = dataUrl;
+    $suratThumb.classList.remove('hidden');
+    $suratFileIcon.classList.add('hidden');
+  } else {
+    $suratThumb.classList.add('hidden');
+    $suratFileIcon.classList.remove('hidden');
+  }
+  $suratFname.textContent = file ? file.name : 'surat_dokter.jpg';
+  $suratFsize.textContent = file ? formatBytes(file.size) : '';
+  $suratEmpty.classList.add('hidden'); $suratFilled.classList.remove('hidden');
+  validateForm();
+}
 
-      $viewForm.classList.add('hidden');
-      $viewSuccess.classList.remove('hidden');
-    }
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
 
-    $btnLagi.addEventListener('click', resetAll);
+// ============================================================
+//  JENIS SELECTION
+// ============================================================
+$jenisBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    $jenisBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+    btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
+    selJenis = btn.dataset.jenis;
 
-    function resetAll() {
-      // Reset state
-      gpsLat = null; gpsLng = null; gpsDist = null; gpsStatus = 'loading';
-      selJenis = null; fotoUrl = null;
-      // Reset form UI
-      $inputNama.value = '';
-      $inputKet.value = '';
-      $jenisBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
-      $secFoto.classList.add('hidden');
+    // Tampil/sembunyikan seksi
+    if (selJenis === 'Masuk' || selJenis === 'Pulang') {
+      $secFoto.classList.remove('hidden');
+      $secTipeIzin.classList.add('hidden');
+      $secSurat.classList.add('hidden');
       $secKet.classList.add('hidden');
-      resetFotoUI();
-      $submitError.classList.add('hidden');
-      $btnSubmit.disabled = true;
-      // Switch views
-      $viewSuccess.classList.add('hidden');
-      $viewForm.classList.remove('hidden');
-      // Re-init GPS
-      initGPS();
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      $inputKet.value = '';
+      $selectTipe.value = ''; $selectTipe.classList.add('placeholder');
+      suratUrl = null; suratFile = null;
+      resetSuratUI();
+    } else { // Izin
+      $secFoto.classList.add('hidden');
+      fotoUrl = null; resetFotoUI();
+      $secTipeIzin.classList.remove('hidden');
+      $secKet.classList.remove('hidden');
+      // Surat dokter: hanya tampil jika Izin Sakit
+      updateSuratVisibility();
     }
 
-    // ============================================================
-    //  SERVICE WORKER
-    // ============================================================
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => { });
-      });
-    }
+    evaluateGPSBlock();
+    validateForm();
+  });
+});
 
-    // ============================================================
-    //  INIT
-    // ============================================================
-    initGPS();
-  </script>
+// ============================================================
+//  TIPE IZIN CHANGE
+// ============================================================
+$selectTipe.addEventListener('change', () => {
+  $selectTipe.classList.remove('placeholder');
+  updateSuratVisibility();
+  validateForm();
+});
+
+function updateSuratVisibility() {
+  if ($selectTipe.value === 'Izin Sakit') {
+    $secSurat.classList.remove('hidden');
+  } else {
+    $secSurat.classList.add('hidden');
+    suratUrl = null; suratFile = null; resetSuratUI();
+  }
+}
+
+function resetSuratUI() {
+  $suratEmpty.classList.remove('hidden'); $suratFilled.classList.add('hidden');
+  $suratThumb.src = ''; $suratThumb.classList.add('hidden'); $suratFileIcon.classList.add('hidden');
+}
+
+// ============================================================
+//  VALIDATION
+// ============================================================
+function validateForm() {
+  const namaOk  = $inputNama.value.trim().length > 0;
+  const jenisOk = selJenis !== null;
+
+  let contOk = false;
+  if (selJenis === 'Masuk' || selJenis === 'Pulang') {
+    // GPS wajib aktif (ok atau outside — keduanya punya koordinat)
+    const gpsHasCoords = gpsLat !== null && gpsLng !== null;
+    contOk = fotoUrl !== null && gpsHasCoords;
+  }
+  if (selJenis === 'Izin') {
+    const tipeOk  = $selectTipe.value !== '';
+    const ketOk   = $inputKet.value.trim().length > 0;
+    const suratOk = ($selectTipe.value === 'Izin Sakit') ? suratUrl !== null : true;
+    contOk = tipeOk && ketOk && suratOk;
+  }
+
+  $btnSubmit.disabled = !(namaOk && jenisOk && contOk);
+}
+
+$inputNama.addEventListener('input', validateForm);
+$inputKet.addEventListener('input',  validateForm);
+
+// ============================================================
+//  SUBMIT
+// ============================================================
+$btnSubmit.addEventListener('click', submitAbsensi);
+
+async function submitAbsensi() {
+  const nama = $inputNama.value.trim();
+  if (!nama || !selJenis || $btnSubmit.disabled) return;
+
+  const payload = {
+    nama,
+    jenis:      selJenis,
+    lat:        gpsLat,
+    lng:        gpsLng,
+    foto:       fotoUrl   || null,
+    tipeIzin:   $selectTipe.value || null,
+    keterangan: $inputKet.value.trim() || null,
+    suratDokter: suratUrl || null,
+  };
+
+  $loadingOv.classList.remove('hidden');
+  $submitError.classList.add('hidden');
+  $btnSubmit.disabled = true;
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload), redirect: 'follow'
+    });
+    let data;
+    try { data = await res.json(); }
+    catch { throw new Error('Respons server tidak terbaca. Periksa URL Apps Script.'); }
+    if (!data.success) throw new Error(data.error || 'Kesalahan server.');
+    showSuccess({ nama, jenis: selJenis, tipeIzin: $selectTipe.value, ...data });
+  } catch(err) {
+    let msg = err.message;
+    if (err instanceof TypeError) msg = 'Tidak bisa menghubungi server. Periksa koneksi internet.';
+    $submitError.textContent = msg;
+    $submitError.classList.remove('hidden');
+    $btnSubmit.disabled = false;
+  } finally { $loadingOv.classList.add('hidden'); }
+}
+
+// ============================================================
+//  SUCCESS
+// ============================================================
+function showSuccess(info) {
+  el('s-nama').textContent  = info.nama;
+  el('s-waktu').textContent = info.timestamp || '—';
+  let lok = 'GPS tidak tersedia';
+  if (info.jarak != null) lok = `${info.jarak} m dari pabrik · ${info.dalamRadius ? '✓ Dalam Radius' : '⚠ Di Luar Radius'}`;
+  el('s-lokasi').textContent = lok;
+
+  const rowTipe = el('s-row-tipe');
+  if (info.tipeIzin) { el('s-tipe').textContent = info.tipeIzin; rowTipe.style.display = 'flex'; }
+  else rowTipe.style.display = 'none';
+
+  const rowKet = el('s-row-ket');
+  if (info.jenis === 'Izin' && $inputKet.value.trim()) {
+    el('s-ket').textContent = $inputKet.value.trim(); rowKet.style.display = 'flex';
+  } else rowKet.style.display = 'none';
+
+  const pill = el('s-pill');
+  pill.textContent = info.status || info.jenis; pill.className = 'status-pill';
+  if      ((info.status||'').includes('TIDAK VALID')) pill.classList.add('pill-invalid');
+  else if ((info.status||'').includes('Telat'))       pill.classList.add('pill-late');
+  else if  (info.jenis === 'Izin')                    pill.classList.add('pill-izin');
+  else                                                pill.classList.add('pill-ok');
+
+  $viewForm.classList.add('hidden');
+  $viewSuccess.classList.remove('hidden');
+}
+
+$btnLagi.addEventListener('click', () => {
+  gpsLat = gpsLng = gpsDist = null; gpsStatus = 'loading'; selJenis = null;
+  fotoUrl = null; suratUrl = null; suratFile = null;
+  $inputNama.value = ''; $inputKet.value = '';
+  $selectTipe.value = ''; $selectTipe.classList.add('placeholder');
+  $jenisBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+  $secFoto.classList.add('hidden'); $secKet.classList.add('hidden');
+  $secTipeIzin.classList.add('hidden'); $secSurat.classList.add('hidden');
+  resetFotoUI(); resetSuratUI();
+  $gpsBlock.classList.add('hidden');
+  $submitError.classList.add('hidden'); $btnSubmit.disabled = true;
+  $viewSuccess.classList.add('hidden'); $viewForm.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  initGPS();
+});
+
+// ============================================================
+//  SERVICE WORKER + INIT
+// ============================================================
+if ('serviceWorker' in navigator)
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+
+initGPS();
+</script>
 </body>
-
 </html>
